@@ -65,17 +65,24 @@ const bookAppointment = (slot) => {
                             <div
                                 v-for="doctor in doctors"
                                 :key="doctor.id"
-                                @click="selectDoctor(doctor.slug)"
                                 :class="[
-                                    'p-4 border-2 rounded-lg cursor-pointer transition',
+                                    'p-4 border-2 rounded-lg transition relative',
                                     selectedDoctorSlug === doctor.slug
                                         ? 'border-blue-500 bg-blue-50'
                                         : 'border-gray-200 hover:border-blue-300'
                                 ]"
                             >
-                                <h3 class="font-semibold text-lg">{{ doctor.name }}</h3>
-                                <p class="text-sm text-gray-600">{{ doctor.specialty }}</p>
-                                <p class="text-xs text-gray-500 mt-2">{{ doctor.email }}</p>
+                                <div @click="selectDoctor(doctor.slug)" class="cursor-pointer">
+                                    <h3 class="font-semibold text-lg">{{ doctor.name }}</h3>
+                                    <p class="text-sm text-gray-600">{{ doctor.specialty }}</p>
+                                    <p class="text-xs text-gray-500 mt-2">{{ doctor.email }}</p>
+                                </div>
+                                <Link 
+                                    :href="`/doctors/${doctor.slug}`"
+                                    class="text-xs text-blue-600 hover:text-blue-800 mt-3 inline-block"
+                                >
+                                    Ver perfil completo →
+                                </Link>
                             </div>
                         </div>
                     </div>
