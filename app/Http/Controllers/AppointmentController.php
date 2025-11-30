@@ -60,6 +60,12 @@ class AppointmentController extends Controller
         $doctorSlug = $request->query('doctor');
         $startTime = $request->query('start');
 
+        \Log::info('DEBUG Create Form', [
+            'doctor_slug' => $doctorSlug,
+            'start_time_raw' => $startTime,
+            'user_agent' => $request->header('User-Agent'),
+        ]);
+
         $doctor = null;
         $slotDate = null;
         $slotTime = null;
@@ -70,6 +76,11 @@ class AppointmentController extends Controller
                 $dateTime = Carbon::parse($startTime);
                 $slotDate = $dateTime->format('Y-m-d');
                 $slotTime = $dateTime->format('H:i');
+                
+                \Log::info('DEBUG Parsed DateTime', [
+                    'parsed' => $dateTime->format('Y-m-d H:i:s'),
+                    'timezone' => $dateTime->timezone->getName(),
+                ]);
             }
         }
 

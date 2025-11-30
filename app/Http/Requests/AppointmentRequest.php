@@ -41,6 +41,16 @@ class AppointmentRequest extends FormRequest
                     $appointmentService = app(AppointmentService::class);
                     $endTime = $appointmentService->calculateEndTime($startTime);
 
+                    // Debug: Log para verificar qué está llegando
+                    \Log::info('DEBUG Appointment Validation', [
+                        'raw_value' => $value,
+                        'parsed_start' => $startTime->format('Y-m-d H:i:s'),
+                        'parsed_end' => $endTime->format('Y-m-d H:i:s'),
+                        'doctor_id' => $doctorId,
+                        'is_available' => $appointmentService->checkAvailability($doctorId, $startTime, $endTime),
+                        'timezone' => $startTime->timezone->getName(),
+                    ]);
+
                     if (!$appointmentService->checkAvailability($doctorId, $startTime, $endTime)) {
                         $fail('El horario seleccionado no está disponible.');
                     }

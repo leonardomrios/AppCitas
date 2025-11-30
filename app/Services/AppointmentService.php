@@ -124,8 +124,8 @@ class AppointmentService
                         // Check if slot is available (no conflicts)
                         if ($this->checkAvailability($doctorId, $currentSlot, $slotEnd)) {
                             $availableSlots->push([
-                                'start_time' => $currentSlot->copy(),
-                                'end_time' => $slotEnd->copy(),
+                                'start_time' => $currentSlot->format('Y-m-d H:i:s'), // Enviar como string para evitar conversión UTC
+                                'end_time' => $slotEnd->format('Y-m-d H:i:s'),
                                 'date' => $currentSlot->format('Y-m-d'),
                                 'time' => $currentSlot->format('H:i'),
                             ]);

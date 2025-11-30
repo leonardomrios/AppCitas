@@ -21,6 +21,19 @@ class DoctorAvailability extends Model
     ];
 
     /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'start_time' => 'string',
+            'end_time' => 'string',
+        ];
+    }
+
+    /**
      * Get the doctor that owns the availability.
      */
     public function doctor(): BelongsTo
