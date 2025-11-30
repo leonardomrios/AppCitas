@@ -16,14 +16,14 @@ defineProps({
                     <div class="flex justify-between h-16">
                         <div class="flex">
                             <div class="shrink-0 flex items-center">
-                                <Link :href="route('home')" class="text-xl font-bold text-blue-600">
+                                <Link :href="route('welcome')" class="text-xl font-bold text-blue-600">
                                     Clínica Gastroenterología
                                 </Link>
                             </div>
                         </div>
 
                         <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                            <Link :href="route('home')" class="inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 text-gray-900">
+                            <Link :href="route('welcome')" class="inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 text-gray-900">
                                 Inicio
                             </Link>
                             <Link v-if="$page.props.auth?.user" :href="route('dashboard')" class="inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 text-gray-900">

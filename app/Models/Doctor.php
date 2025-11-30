@@ -59,10 +59,7 @@ class Doctor extends Model
         // Convert Carbon dayOfWeek (0=Sunday, 6=Saturday) to our format (1=Monday, 7=Sunday)
         $carbonDayOfWeek = $dateTime->dayOfWeek;
         $dayOfWeek = $carbonDayOfWeek === 0 ? 7 : $carbonDayOfWeek;
-        $time = $dateTime->format('H:i:s');
-
-        // Check availability - convert time to string for comparison
-        $timeStr = $time->format('H:i:s');
+        $timeStr = $dateTime->format('H:i:s');
         $availability = $this->availabilities()
             ->where('day_of_week', $dayOfWeek)
             ->whereRaw('TIME(start_time) <= ?', [$timeStr])
@@ -81,7 +78,7 @@ class Doctor extends Model
                     $q->where('start_time', '<=', $dateTime)
                       ->where('end_time', '>', $dateTime);
                 })->orWhere(function ($q) use ($dateTime) {
-                    $q->where('start_time', '<', $dateTime->copy()->addMinutes(config('appointment.duration_minutes')))
+                    $q->where('start_time', '<', $dateTime->copy()->addMinutes((int) config('appointment.duration_minutes')))
                       ->where('end_time', '>=', $dateTime);
                 });
             })
@@ -98,7 +95,7 @@ class Doctor extends Model
         $weekEnd = $weekStart->copy()->endOfWeek();
         $availabilities = [];
 
-        for ($date = $weekStart->copy(); $date->lte($weekEnd); $date->addDay()) {
+        for ($date = $weekStart->copy(); $date->lte($weekEnd); $date->addDay(1)) {
             // Convert Carbon dayOfWeek (0=Sunday, 6=Saturday) to our format (1=Monday, 7=Sunday)
             $carbonDayOfWeek = $date->dayOfWeek;
             $dayOfWeek = $carbonDayOfWeek === 0 ? 7 : $carbonDayOfWeek;

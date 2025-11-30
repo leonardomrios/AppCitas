@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 // Public routes
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/doctors/{doctor:slug}', [DoctorController::class, 'show']);
+Route::get('/', [HomeController::class, 'index'])->name('welcome');
+Route::get('/doctors/{doctor:slug}', [DoctorController::class, 'show'])->name('doctors.show');
 Route::get('/appointments/new', [AppointmentController::class, 'create'])->name('appointments.create');
 Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
 

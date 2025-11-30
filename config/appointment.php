@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'duration_minutes' => env('APPOINTMENT_DURATION_MINUTES', 30),
+    'duration_minutes' => (int) env('APPOINTMENT_DURATION_MINUTES', 20),
 
     /*
     |--------------------------------------------------------------------------

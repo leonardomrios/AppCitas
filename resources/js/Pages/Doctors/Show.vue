@@ -24,7 +24,7 @@ const bookSlot = (slot) => {
             <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <Link :href="route('home')" class="text-blue-600 hover:text-blue-800 mb-4 inline-block">
+                        <Link :href="route('welcome')" class="text-blue-600 hover:text-blue-800 mb-4 inline-block">
                             ← Volver
                         </Link>
 

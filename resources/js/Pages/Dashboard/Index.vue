@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
@@ -9,6 +10,12 @@ const props = defineProps({
     stats: Object,
     doctors: Array,
     selectedDoctor: Number,
+});
+
+const localSelectedDoctor = ref(props.selectedDoctor);
+
+watch(() => props.selectedDoctor, (newValue) => {
+    localSelectedDoctor.value = newValue;
 });
 
 const filterByDoctor = (doctorId) => {
@@ -33,7 +40,7 @@ const filterByDoctor = (doctorId) => {
                 <!-- Filter -->
                 <div class="mb-6">
                     <select
-                        v-model="selectedDoctor"
+                        v-model="localSelectedDoctor"
                         @change="filterByDoctor($event.target.value)"
                         class="border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     >

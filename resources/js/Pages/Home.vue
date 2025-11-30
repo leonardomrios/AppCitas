@@ -27,7 +27,7 @@ const navigateWeek = (direction) => {
 };
 
 const loadSlots = () => {
-    router.get(route('home'), {
+    router.get(route('welcome'), {
         doctor: selectedDoctorSlug.value,
         week: currentWeekStart.value,
     }, {

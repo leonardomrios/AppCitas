@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DangerButton from '@/Components/DangerButton.vue';
@@ -7,6 +7,12 @@ import DangerButton from '@/Components/DangerButton.vue';
 const props = defineProps({
     doctors: Array,
 });
+
+const deleteDoctor = (doctorId) => {
+    if (confirm('¿Eliminar médico?')) {
+        router.delete(route('doctors.destroy', doctorId));
+    }
+};
 </script>
 
 <template>
@@ -52,7 +58,7 @@ const props = defineProps({
                                         Editar
                                     </Link>
                                     <button
-                                        @click="if(confirm('¿Eliminar médico?')) { $inertia.delete(route('doctors.destroy', doctor.id)) }"
+                                        @click="deleteDoctor(doctor.id)"
                                         class="text-red-600 hover:text-red-900"
                                     >
                                         Eliminar

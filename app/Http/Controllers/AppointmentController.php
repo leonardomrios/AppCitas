@@ -89,7 +89,7 @@ class AppointmentController extends Controller
         $validated = $request->validated();
 
         $startTime = Carbon::parse($validated['start_time']);
-        $duration = config('app.appointment_duration_minutes');
+        $duration = config('appointment.duration_minutes');
         $endTime = Carbon::parse($request->start_time)->addMinutes($duration);
 
         $appointment = Appointment::create([
@@ -106,7 +106,7 @@ class AppointmentController extends Controller
         // Send email notification
         Mail::to($validated['patient_email'])->send(new AppointmentCreated($appointment));
 
-        return redirect()->route('home')
+        return redirect()->route('welcome')
             ->with('success', 'Tu solicitud de cita ha sido enviada. Te notificaremos por correo cuando sea procesada.');
     }
 

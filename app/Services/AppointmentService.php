@@ -31,7 +31,7 @@ class AppointmentService
 
         // Convert Carbon dayOfWeek (0=Sunday, 6=Saturday) to our format (1=Monday, 7=Sunday)
         $dayOfWeekFormatted = $dayOfWeek === 0 ? 7 : $dayOfWeek;
-        
+
         $availability = \App\Models\DoctorAvailability::where('doctor_id', $doctorId)
             ->where('day_of_week', $dayOfWeekFormatted)
             ->whereRaw('TIME(start_time) <= ?', [$startTimeStr])
@@ -49,15 +49,15 @@ class AppointmentService
                 $query->where(function ($q) use ($startTime, $endTime) {
                     // Overlapping: start_time is between appointment start and end
                     $q->where('start_time', '<=', $startTime)
-                      ->where('end_time', '>', $startTime);
+                        ->where('end_time', '>', $startTime);
                 })->orWhere(function ($q) use ($startTime, $endTime) {
                     // Overlapping: end_time is between appointment start and end
                     $q->where('start_time', '<', $endTime)
-                      ->where('end_time', '>=', $endTime);
+                        ->where('end_time', '>=', $endTime);
                 })->orWhere(function ($q) use ($startTime, $endTime) {
                     // Overlapping: appointment completely contains the requested time
                     $q->where('start_time', '>=', $startTime)
-                      ->where('end_time', '<=', $endTime);
+                        ->where('end_time', '<=', $endTime);
                 });
             })
             ->exists();
@@ -73,7 +73,7 @@ class AppointmentService
      */
     public function calculateEndTime(Carbon $startTime): Carbon
     {
-        $durationMinutes = config('appointment.duration_minutes', 30);
+        $durationMinutes = (int) config('appointment.duration_minutes', 20);
         return $startTime->copy()->addMinutes($durationMinutes);
     }
 
@@ -87,7 +87,7 @@ class AppointmentService
     public function getAvailableSlots(int $doctorId, Carbon $weekStart): Collection
     {
         $weekEnd = $weekStart->copy()->endOfWeek();
-        $durationMinutes = config('appointment.duration_minutes', 30);
+        $durationMinutes = (int) config('appointment.duration_minutes', 20);
         $availableSlots = collect();
 
         $doctor = Doctor::findOrFail($doctorId);
@@ -96,15 +96,15 @@ class AppointmentService
             $dayOfWeek = $date->dayOfWeek;
             // Convert Carbon dayOfWeek (0=Sunday, 6=Saturday) to our format (1=Monday, 7=Sunday)
             $dayOfWeekFormatted = $dayOfWeek === 0 ? 7 : $dayOfWeek;
-            
+
             $dayAvailabilities = \App\Models\DoctorAvailability::where('doctor_id', $doctorId)
                 ->where('day_of_week', $dayOfWeekFormatted)
                 ->get();
 
             foreach ($dayAvailabilities as $availability) {
                 // Get time strings - they come as Carbon instances but we need time strings
-                $startTimeStr = is_string($availability->start_time) 
-                    ? $availability->start_time 
+                $startTimeStr = is_string($availability->start_time)
+                    ? $availability->start_time
                     : $availability->start_time->format('H:i:s');
                 $endTimeStr = is_string($availability->end_time)
                     ? $availability->end_time
@@ -116,8 +116,8 @@ class AppointmentService
 
                 // Generate slots
                 $currentSlot = $dayStart->copy();
-                while ($currentSlot->copy()->addMinutes($durationMinutes)->lte($dayEnd)) {
-                    $slotEnd = $currentSlot->copy()->addMinutes($durationMinutes);
+                while ($currentSlot->copy()->addMinutes((int) $durationMinutes)->lte($dayEnd)) {
+                    $slotEnd = $currentSlot->copy()->addMinutes((int) $durationMinutes);
 
                     // Only include slots in the future
                     if ($currentSlot->isFuture()) {
@@ -132,7 +132,7 @@ class AppointmentService
                         }
                     }
 
-                    $currentSlot->addMinutes($durationMinutes);
+                    $currentSlot->addMinutes((int) $durationMinutes);
                 }
             }
         }

@@ -14,9 +14,20 @@ class HomeController extends Controller
     {
         $doctors = Doctor::all();
         $selectedDoctor = request('doctor');
-        $weekStart = request('week') 
-            ? Carbon::parse(request('week'))->startOfWeek() 
-            : Carbon::now()->startOfWeek();
+        
+        // Si no se especifica una semana, comenzar con la semana actual
+        if (request('week')) {
+            $weekStart = Carbon::parse(request('week'))->startOfWeek();
+        } else {
+            // Si estamos después del viernes a las 19:00, mostrar la próxima semana
+            $now = Carbon::now();
+            if ($now->dayOfWeek >= Carbon::SATURDAY || 
+                ($now->dayOfWeek === Carbon::FRIDAY && $now->hour >= 19)) {
+                $weekStart = $now->next(Carbon::MONDAY)->startOfWeek();
+            } else {
+                $weekStart = $now->startOfWeek();
+            }
+        }
 
         $availableSlots = collect();
         
