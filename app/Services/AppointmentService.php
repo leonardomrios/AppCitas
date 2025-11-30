@@ -34,8 +34,8 @@ class AppointmentService
 
         $availability = \App\Models\DoctorAvailability::where('doctor_id', $doctorId)
             ->where('day_of_week', $dayOfWeekFormatted)
-            ->whereRaw('TIME(start_time) <= ?', [$startTimeStr])
-            ->whereRaw('TIME(end_time) >= ?', [$endTimeStr])
+            ->whereRaw('start_time::time <= ?::time', [$startTimeStr])
+            ->whereRaw('end_time::time >= ?::time', [$endTimeStr])
             ->first();
 
         if (!$availability) {

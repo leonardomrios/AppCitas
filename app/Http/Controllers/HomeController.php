@@ -19,10 +19,15 @@ class HomeController extends Controller
         if (request('week')) {
             $weekStart = Carbon::parse(request('week'))->startOfWeek();
         } else {
-            // Si estamos después del viernes a las 19:00, mostrar la próxima semana
+            // Si estamos en fin de semana o después del viernes a las 19:00, mostrar la próxima semana
             $now = Carbon::now();
-            if ($now->dayOfWeek >= Carbon::SATURDAY || 
-                ($now->dayOfWeek === Carbon::FRIDAY && $now->hour >= 19)) {
+            $isDayOfWeek = $now->dayOfWeek;
+            
+            // Domingo = 0, Sábado = 6, Viernes = 5
+            if ($isDayOfWeek === Carbon::SUNDAY || 
+                $isDayOfWeek === Carbon::SATURDAY || 
+                ($isDayOfWeek === Carbon::FRIDAY && $now->hour >= 19)) {
+                // Mostrar la próxima semana laboral (próximo lunes)
                 $weekStart = $now->next(Carbon::MONDAY)->startOfWeek();
             } else {
                 $weekStart = $now->startOfWeek();

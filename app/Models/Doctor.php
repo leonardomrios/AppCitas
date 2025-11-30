@@ -62,8 +62,8 @@ class Doctor extends Model
         $timeStr = $dateTime->format('H:i:s');
         $availability = $this->availabilities()
             ->where('day_of_week', $dayOfWeek)
-            ->whereRaw('TIME(start_time) <= ?', [$timeStr])
-            ->whereRaw('TIME(end_time) >= ?', [$timeStr])
+            ->whereRaw('start_time::time <= ?::time', [$timeStr])
+            ->whereRaw('end_time::time >= ?::time', [$timeStr])
             ->first();
 
         if (!$availability) {
