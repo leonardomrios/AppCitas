@@ -22,9 +22,21 @@ class CalendarController extends Controller
         ]);
 
         $doctorSlug = $request->query('doctor');
-        $weekStart = $request->query('week') 
-            ? Carbon::parse($request->query('week'))->startOfWeek() 
-            : Carbon::now()->startOfWeek();
+        
+        // Si no se especifica semana, usar la semana con citas o la próxima
+        if ($request->query('week')) {
+            $weekStart = Carbon::parse($request->query('week'))->startOfWeek();
+        } else {
+            $now = Carbon::now();
+            // Si es fin de semana o viernes tarde, mostrar próxima semana
+            if ($now->dayOfWeek === Carbon::SUNDAY || 
+                $now->dayOfWeek === Carbon::SATURDAY || 
+                ($now->dayOfWeek === Carbon::FRIDAY && $now->hour >= 19)) {
+                $weekStart = $now->next(Carbon::MONDAY)->startOfWeek();
+            } else {
+                $weekStart = $now->startOfWeek();
+            }
+        }
 
         $weekEnd = $weekStart->copy()->endOfWeek();
 

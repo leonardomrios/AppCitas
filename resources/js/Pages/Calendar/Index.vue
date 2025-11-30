@@ -65,28 +65,65 @@ const navigateWeek = (direction) => {
                 <!-- Calendar Grid -->
                 <div v-if="selectedDoctor" class="grid grid-cols-7 gap-2">
                     <div v-for="day in 7" :key="day" class="border rounded p-2 min-h-32">
-                        <div class="font-semibold text-center mb-2">
-                            {{ new Date(new Date(weekStart).setDate(new Date(weekStart).getDate() + day - 1)).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' }) }}
+                        <div class="font-semibold text-center mb-2 bg-gray-100 p-1 rounded">
+                            {{ new Date(new Date(weekStart).setDate(new Date(weekStart).getDate() + day - 1)).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }) }}
                         </div>
                         <div class="space-y-1">
+                            <!-- Citas pendientes/confirmadas -->
                             <div
                                 v-for="appointment in appointments.filter(a => {
                                     const appointmentDate = new Date(a.start_time).toDateString();
                                     const dayDate = new Date(new Date(weekStart).setDate(new Date(weekStart).getDate() + day - 1)).toDateString();
                                     return appointmentDate === dayDate;
                                 })"
-                                :key="appointment.id"
+                                :key="'apt-' + appointment.id"
                                 :class="{
-                                    'bg-yellow-200': appointment.status === 'pending',
-                                    'bg-green-200': appointment.status === 'confirmed',
+                                    'bg-yellow-200 border-yellow-400': appointment.status === 'pending',
+                                    'bg-green-200 border-green-400': appointment.status === 'confirmed',
                                 }"
-                                class="text-xs p-1 rounded"
+                                class="text-xs p-1 rounded border-2"
                             >
-                                {{ new Date(appointment.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) }}
-                                <br>
-                                {{ appointment.patient_name }}
+                                <div class="font-semibold">
+                                    {{ new Date(appointment.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) }}
+                                </div>
+                                <div class="truncate">{{ appointment.patient_name }}</div>
+                                <div class="text-[10px] uppercase font-semibold">
+                                    {{ appointment.status === 'pending' ? '⏳ Pendiente' : '✓ Confirmada' }}
+                                </div>
+                            </div>
+                            
+                            <!-- Huecos disponibles -->
+                            <div
+                                v-for="slot in availableSlots.filter(s => {
+                                    const slotDate = new Date(s.start_time).toDateString();
+                                    const dayDate = new Date(new Date(weekStart).setDate(new Date(weekStart).getDate() + day - 1)).toDateString();
+                                    return slotDate === dayDate;
+                                })"
+                                :key="'slot-' + slot.start_time"
+                                class="text-xs p-1 rounded bg-blue-50 border border-blue-200 text-blue-700"
+                            >
+                                <div class="font-medium">
+                                    {{ new Date(slot.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) }}
+                                </div>
+                                <div class="text-[10px]">Disponible</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Leyenda -->
+                <div v-if="selectedDoctor" class="mt-6 flex gap-4 justify-center text-sm">
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 bg-yellow-200 border-2 border-yellow-400 rounded"></div>
+                        <span>Pendiente</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 bg-green-200 border-2 border-green-400 rounded"></div>
+                        <span>Confirmada</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 bg-blue-50 border border-blue-200 rounded"></div>
+                        <span>Disponible</span>
                     </div>
                 </div>
             </div>
