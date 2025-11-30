@@ -26,8 +26,8 @@ Route::middleware([
     // Doctors resource routes
     Route::resource('doctors', DoctorController::class)->except(['show']);
 
-    // Appointments resource routes
-    Route::resource('appointments', AppointmentController::class);
+    // Appointments resource routes (exclude public routes: create and store)
+    Route::resource('appointments', AppointmentController::class)->except(['create', 'store']);
     Route::post('/appointments/{appointment:slug}/accept', [AppointmentController::class, 'accept'])->name('appointments.accept');
     Route::post('/appointments/{appointment:slug}/reject', [AppointmentController::class, 'reject'])->name('appointments.reject');
     Route::post('/appointments/{appointment:slug}/complete', [AppointmentController::class, 'complete'])->name('appointments.complete');
