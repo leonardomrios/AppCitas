@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import ApplicationMark from '@/Components/ApplicationMark.vue';
 import Banner from '@/Components/Banner.vue';
 import Dropdown from '@/Components/Dropdown.vue';
@@ -13,6 +13,11 @@ defineProps({
 });
 
 const showingNavigationDropdown = ref(false);
+
+const navigateToCalendar = () => {
+    // Redirigir al calendario del primer doctor por defecto
+    router.get('/calendar?doctor=dr-carlos-ramirez');
+};
 
 const switchToTeam = (team) => {
     router.put(route('current-team.update'), {
@@ -54,9 +59,9 @@ const logout = () => {
                                 <NavLink :href="route('appointments.index')" :active="route().current('appointments.*')">
                                     Citas
                                 </NavLink>
-                                <NavLink :href="route('calendar')" :active="route().current('calendar')">
+                                <button @click="navigateToCalendar" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:text-gray-700 focus:border-gray-300" :class="{ 'border-indigo-400 text-gray-900 focus:border-indigo-700': route().current('calendar') }">
                                     Calendario
-                                </NavLink>
+                                </button>
                                 <NavLink :href="route('doctors.index')" :active="route().current('doctors.*')">
                                     Médicos
                                 </NavLink>
@@ -206,9 +211,9 @@ const logout = () => {
                         <ResponsiveNavLink :href="route('appointments.index')" :active="route().current('appointments.*')">
                             Citas
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink :href="route('calendar')" :active="route().current('calendar')">
+                        <button @click="navigateToCalendar" class="w-full text-start block ps-3 pe-4 py-2 border-l-4 text-base font-medium transition duration-150 ease-in-out focus:outline-none border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300 focus:text-gray-800 focus:bg-gray-50 focus:border-gray-300" :class="{ 'border-indigo-400 text-indigo-700 bg-indigo-50 focus:text-indigo-800 focus:bg-indigo-100 focus:border-indigo-700': route().current('calendar') }">
                             Calendario
-                        </ResponsiveNavLink>
+                        </button>
                         <ResponsiveNavLink :href="route('doctors.index')" :active="route().current('doctors.*')">
                             Médicos
                         </ResponsiveNavLink>
