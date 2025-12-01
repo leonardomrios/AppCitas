@@ -110,16 +110,18 @@ const getDoctorIcon = (specialty) => {
                         <div
                             v-for="doctor in doctors"
                             :key="doctor.id"
-                            @click="selectDoctor(doctor.slug)"
                             :class="[
-                                'group cursor-pointer bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden',
+                                'group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden',
                                 selectedDoctorSlug === doctor.slug
                                     ? 'ring-4 ring-medical-500 transform scale-105'
                                     : 'hover:transform hover:scale-105'
                             ]"
                         >
                             <!-- Doctor Image -->
-                            <div class="relative h-48 bg-gradient-to-br from-medical-100 to-health-100 flex items-center justify-center">
+                            <div 
+                                @click="selectDoctor(doctor.slug)"
+                                class="relative h-48 bg-gradient-to-br from-medical-100 to-health-100 flex items-center justify-center cursor-pointer"
+                            >
                                 <div :class="[
                                     'absolute inset-0 bg-gradient-to-br transition-opacity duration-300',
                                     selectedDoctorSlug === doctor.slug 
@@ -149,27 +151,30 @@ const getDoctorIcon = (specialty) => {
 
                             <!-- Doctor Info -->
                             <div class="p-6">
-                                <h3 class="text-xl font-bold text-gray-900 mb-2 flex items-center">
-                                    {{ doctor.name }}
-                                    <svg v-if="selectedDoctorSlug === doctor.slug" class="w-5 h-5 ml-2 text-medical-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </h3>
-                                <div class="flex items-center space-x-2 text-medical-600 mb-3">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                                    </svg>
-                                    <span class="font-medium">{{ doctor.specialty }}</span>
+                                <div @click="selectDoctor(doctor.slug)" class="cursor-pointer">
+                                    <h3 class="text-xl font-bold text-gray-900 mb-2 flex items-center">
+                                        {{ doctor.name }}
+                                        <svg v-if="selectedDoctorSlug === doctor.slug" class="w-5 h-5 ml-2 text-medical-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </h3>
+                                    <div class="flex items-center space-x-2 text-medical-600 mb-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                        </svg>
+                                        <span class="font-medium">{{ doctor.specialty }}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-4 flex items-center space-x-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <span>{{ doctor.email }}</span>
+                                    </p>
                                 </div>
-                                <p class="text-sm text-gray-600 mb-4 flex items-center space-x-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                    </svg>
-                                    <span>{{ doctor.email }}</span>
-                                </p>
                                 <Link 
                                     :href="`/doctors/${doctor.slug}`"
-                                    class="text-medical-600 hover:text-medical-700 text-sm font-medium flex items-center space-x-1 group/link"
+                                    class="text-medical-600 hover:text-medical-700 text-sm font-medium flex items-center space-x-1 group/link hover:underline"
+                                    @click.stop
                                 >
                                     <span>Ver perfil completo</span>
                                     <svg class="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

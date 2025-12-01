@@ -195,7 +195,7 @@ const bookSlot = (slot) => {
                             </div>
                         </div>
 
-                        <div v-else class="text-center py-12">
+                        <!-- <div v-else class="text-center py-12">
                             <div class="bg-gray-50 rounded-2xl p-8 max-w-md mx-auto">
                                 <div class="bg-gray-200 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                                     <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -214,7 +214,7 @@ const bookSlot = (slot) => {
                                     <span>Ver Calendario Completo</span>
                                 </Link>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
