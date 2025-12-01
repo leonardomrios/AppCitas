@@ -45,6 +45,7 @@ class DoctorController extends Controller
             'user_id' => 'nullable|exists:users,id',
         ]);
 
+        // El slug se genera automáticamente en el modelo (HasSlug trait)
         $doctor = Doctor::create($validated);
 
         return redirect()->route('doctors.index')
@@ -104,9 +105,22 @@ class DoctorController extends Controller
      */
     public function destroy(Doctor $doctor)
     {
+        // Verificar si el doctor tiene citas relacionadas
+        $appointmentsCount = $doctor->appointments()->count();
+        
+        if ($appointmentsCount > 0) {
+            return redirect()->route('doctors.index')
+                ->withErrors([
+                    'delete' => "No se puede eliminar al doctor {$doctor->name} porque tiene {$appointmentsCount} cita(s) asignada(s). 
+                    Primero debe eliminar o reasignar todas las citas del doctor."
+                ]);
+        }
+
+        // Si no tiene citas, proceder con la eliminación
+        $doctorName = $doctor->name;
         $doctor->delete();
 
         return redirect()->route('doctors.index')
-            ->with('success', 'Médico eliminado exitosamente.');
+            ->with('success', "Médico {$doctorName} eliminado exitosamente.");
     }
 }

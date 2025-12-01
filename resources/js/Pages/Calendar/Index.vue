@@ -2,6 +2,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { computed } from 'vue';
 
 const props = defineProps({
     doctors: Array,
@@ -20,6 +21,32 @@ const navigateWeek = (direction) => {
         doctor: props.selectedDoctor?.slug,
         week: week.toISOString().split('T')[0],
     });
+};
+
+// Combinar y ordenar citas y huecos por día y hora
+const getEventsForDay = (day) => {
+    const dayDate = new Date(new Date(props.weekStart).setDate(new Date(props.weekStart).getDate() + day - 1)).toDateString();
+    
+    // Obtener citas del día
+    const dayAppointments = props.appointments
+        .filter(a => new Date(a.start_time).toDateString() === dayDate)
+        .map(a => ({
+            type: 'appointment',
+            time: new Date(a.start_time),
+            data: a
+        }));
+    
+    // Obtener huecos del día
+    const daySlots = props.availableSlots
+        .filter(s => new Date(s.start_time).toDateString() === dayDate)
+        .map(s => ({
+            type: 'slot',
+            time: new Date(s.start_time),
+            data: s
+        }));
+    
+    // Combinar y ordenar por hora
+    return [...dayAppointments, ...daySlots].sort((a, b) => a.time - b.time);
 };
 </script>
 
@@ -69,44 +96,37 @@ const navigateWeek = (direction) => {
                             {{ new Date(new Date(weekStart).setDate(new Date(weekStart).getDate() + day - 1)).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }) }}
                         </div>
                         <div class="space-y-1">
-                            <!-- Citas pendientes/confirmadas -->
-                            <div
-                                v-for="appointment in appointments.filter(a => {
-                                    const appointmentDate = new Date(a.start_time).toDateString();
-                                    const dayDate = new Date(new Date(weekStart).setDate(new Date(weekStart).getDate() + day - 1)).toDateString();
-                                    return appointmentDate === dayDate;
-                                })"
-                                :key="'apt-' + appointment.id"
-                                :class="{
-                                    'bg-yellow-200 border-yellow-400': appointment.status === 'pending',
-                                    'bg-green-200 border-green-400': appointment.status === 'confirmed',
-                                }"
-                                class="text-xs p-1 rounded border-2"
-                            >
-                                <div class="font-semibold">
-                                    {{ new Date(appointment.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) }}
+                            <!-- Eventos ordenados por hora -->
+                            <template v-for="event in getEventsForDay(day)" :key="event.type + '-' + event.time">
+                                <!-- Cita pendiente/confirmada -->
+                                <div
+                                    v-if="event.type === 'appointment'"
+                                    :class="{
+                                        'bg-yellow-200 border-yellow-400': event.data.status === 'pending',
+                                        'bg-green-200 border-green-400': event.data.status === 'confirmed',
+                                    }"
+                                    class="text-xs p-1 rounded border-2"
+                                >
+                                    <div class="font-semibold">
+                                        {{ event.time.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) }}
+                                    </div>
+                                    <div class="truncate">{{ event.data.patient_name }}</div>
+                                    <div class="text-[10px] uppercase font-semibold">
+                                        {{ event.data.status === 'pending' ? '⏳ Pendiente' : '✓ Confirmada' }}
+                                    </div>
                                 </div>
-                                <div class="truncate">{{ appointment.patient_name }}</div>
-                                <div class="text-[10px] uppercase font-semibold">
-                                    {{ appointment.status === 'pending' ? '⏳ Pendiente' : '✓ Confirmada' }}
+                                
+                                <!-- Hueco disponible -->
+                                <div
+                                    v-else
+                                    class="text-xs p-1 rounded bg-blue-50 border border-blue-200 text-blue-700"
+                                >
+                                    <div class="font-medium">
+                                        {{ event.time.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) }}
+                                    </div>
+                                    <div class="text-[10px]">Disponible</div>
                                 </div>
-                            </div>
-                            
-                            <!-- Huecos disponibles -->
-                            <div
-                                v-for="slot in availableSlots.filter(s => {
-                                    const slotDate = new Date(s.start_time).toDateString();
-                                    const dayDate = new Date(new Date(weekStart).setDate(new Date(weekStart).getDate() + day - 1)).toDateString();
-                                    return slotDate === dayDate;
-                                })"
-                                :key="'slot-' + slot.start_time"
-                                class="text-xs p-1 rounded bg-blue-50 border border-blue-200 text-blue-700"
-                            >
-                                <div class="font-medium">
-                                    {{ new Date(slot.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) }}
-                                </div>
-                                <div class="text-[10px]">Disponible</div>
-                            </div>
+                            </template>
                         </div>
                     </div>
                 </div>

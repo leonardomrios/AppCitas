@@ -19,7 +19,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.put(route('doctors.update', props.doctor.id));
+    form.put(route('doctors.update', props.doctor.slug));
 };
 </script>
 
