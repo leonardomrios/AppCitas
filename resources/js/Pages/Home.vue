@@ -209,7 +209,7 @@ const getDoctorIcon = (specialty) => {
                         <div class="flex min-h-full items-center justify-center p-4">
                             <div 
                                 @click.stop
-                                class="relative bg-white rounded-2xl shadow-2xl w-full max-w-6xl transform transition-all animate-scale-in"
+                                class="relative bg-white rounded-2xl shadow-2xl w-full max-w-7xl transform transition-all animate-scale-in"
                             >
                                 <!-- Close Button -->
                                 <button 
@@ -254,22 +254,22 @@ const getDoctorIcon = (specialty) => {
                                     </div>
 
                                     <!-- Calendar Grid -->
-                                    <div class="p-6 max-h-[60vh] overflow-y-auto">
-                                        <div class="grid grid-cols-2 md:grid-cols-7 gap-4">
+                                    <div class="p-6 max-h-[75vh] overflow-y-auto">
+                                        <div class="grid grid-cols-2 md:grid-cols-7 gap-3">
                                             <div
                                                 v-for="day in 7"
                                                 :key="day"
-                                                class="bg-gradient-to-br from-gray-50 to-medical-50/30 rounded-xl p-4 border border-gray-200"
+                                                class="bg-gradient-to-br from-gray-50 to-medical-50/30 rounded-lg p-3 border border-gray-200"
                                             >
-                                                <div class="font-bold text-center mb-3 pb-2 border-b border-medical-200">
+                                                <div class="font-bold text-center mb-2 pb-1.5 border-b border-medical-200">
                                                     <div class="text-xs text-gray-500 uppercase">
                                                         {{ new Date(new Date(currentWeekStart).setDate(new Date(currentWeekStart).getDate() + day - 1)).toLocaleDateString('es-ES', { weekday: 'short' }) }}
                                                     </div>
-                                                    <div class="text-lg text-gray-900">
+                                                    <div class="text-base text-gray-900">
                                                         {{ new Date(new Date(currentWeekStart).setDate(new Date(currentWeekStart).getDate() + day - 1)).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) }}
                                                     </div>
                                                 </div>
-                                                <div class="space-y-2">
+                                                <div class="space-y-1.5">
                                                     <button
                                                         v-for="slot in availableSlots.filter(s => {
                                                             const slotDate = new Date(s.start_time).toDateString();
@@ -278,7 +278,7 @@ const getDoctorIcon = (specialty) => {
                                                         })"
                                                         :key="slot.start_time"
                                                         @click="bookAppointment(slot)"
-                                                        class="w-full text-sm px-3 py-2 bg-gradient-to-r from-medical-500 to-medical-600 hover:from-medical-600 hover:to-health-600 text-white rounded-lg transition-all hover:shadow-lg hover:scale-105 font-medium"
+                                                        class="w-full text-xs px-2.5 py-1.5 bg-gradient-to-r from-medical-500 to-medical-600 hover:from-medical-600 hover:to-health-600 text-white rounded-md transition-all hover:shadow-lg hover:scale-105 font-medium"
                                                     >
                                                         {{ new Date(slot.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) }}
                                                     </button>
@@ -286,7 +286,7 @@ const getDoctorIcon = (specialty) => {
                                                         const slotDate = new Date(s.start_time).toDateString();
                                                         const dayDate = new Date(new Date(currentWeekStart).setDate(new Date(currentWeekStart).getDate() + day - 1)).toDateString();
                                                         return slotDate === dayDate;
-                                                    }).length === 0" class="text-xs text-center text-gray-400 py-4">
+                                                    }).length === 0" class="text-xs text-center text-gray-400 py-3">
                                                         No disponible
                                                     </div>
                                                 </div>
