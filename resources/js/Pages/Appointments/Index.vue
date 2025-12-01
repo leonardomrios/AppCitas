@@ -1,13 +1,42 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DangerButton from '@/Components/DangerButton.vue';
+import Toast from '@/Components/Toast.vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
     appointments: Object,
     doctors: Array,
     filters: Object,
+});
+
+const page = usePage();
+const success = computed(() => page.props.flash?.success);
+const errors = computed(() => page.props.errors || {});
+
+// Toast notifications
+const showToast = ref(false);
+const toastMessage = ref('');
+const toastType = ref('success');
+
+// Watch for flash messages
+watch(success, (newValue) => {
+    if (newValue) {
+        toastMessage.value = newValue;
+        toastType.value = 'success';
+        showToast.value = true;
+    }
+});
+
+// Watch for errors
+watch(() => errors.value.error, (newValue) => {
+    if (newValue) {
+        toastMessage.value = newValue;
+        toastType.value = 'error';
+        showToast.value = true;
+    }
 });
 
 const acceptAppointment = (slug) => {
@@ -44,6 +73,14 @@ const filterAppointments = () => {
 <template>
     <AppLayout title="Gestión de Citas">
         <Head title="Gestión de Citas" />
+
+        <!-- Toast Notification -->
+        <Toast
+            :show="showToast"
+            :message="toastMessage"
+            :type="toastType"
+            @close="showToast = false"
+        />
 
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">

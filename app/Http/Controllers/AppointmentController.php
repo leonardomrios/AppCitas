@@ -114,11 +114,15 @@ class AppointmentController extends Controller
             'status' => 'pending',
         ]);
 
+        // Load doctor relationship
+        $appointment->load('doctor');
+
         // Send email notification
         Mail::to($validated['patient_email'])->send(new AppointmentCreated($appointment));
 
-        return redirect()->route('welcome')
-            ->with('success', 'Tu solicitud de cita ha sido enviada. Te notificaremos por correo cuando sea procesada.');
+        return Inertia::render('Appointments/Success', [
+            'appointment' => $appointment,
+        ]);
     }
 
     /**
