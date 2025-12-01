@@ -10,7 +10,6 @@ use Inertia\Inertia;
 
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('welcome');
-Route::get('/doctors/{doctor:slug}', [DoctorController::class, 'show'])->name('doctors.show');
 Route::get('/appointments/new', [AppointmentController::class, 'create'])->name('appointments.create');
 Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
 
@@ -33,6 +32,9 @@ Route::middleware([
     Route::post('/appointments/{appointment:slug}/complete', [AppointmentController::class, 'complete'])->name('appointments.complete');
     Route::post('/appointments/{appointment:slug}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
 });
+
+// Public doctor profile (must be after protected routes to avoid conflicts)
+Route::get('/doctors/{doctor:slug}', [DoctorController::class, 'show'])->name('doctors.show');
 
 Route::get('/home', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
