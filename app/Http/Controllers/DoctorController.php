@@ -48,6 +48,9 @@ class DoctorController extends Controller
         // El slug se genera automáticamente en el modelo (HasSlug trait)
         $doctor = Doctor::create($validated);
 
+        // Crear horarios de disponibilidad por defecto (Lunes a Viernes, 9:00-13:00 y 15:00-19:00)
+        $this->createDefaultAvailability($doctor);
+
         return redirect()->route('doctors.index')
             ->with('success', 'Médico creado exitosamente.');
     }
@@ -122,5 +125,28 @@ class DoctorController extends Controller
 
         return redirect()->route('doctors.index')
             ->with('success', "Médico {$doctorName} eliminado exitosamente.");
+    }
+
+    /**
+     * Create default availability schedule for a doctor.
+     * Monday to Friday: 9:00 AM - 1:00 PM and 3:00 PM - 7:00 PM
+     */
+    private function createDefaultAvailability(Doctor $doctor): void
+    {
+        $schedules = [
+            ['start' => '09:00:00', 'end' => '13:00:00'],
+            ['start' => '15:00:00', 'end' => '19:00:00'],
+        ];
+
+        // Create availability for Monday (1) to Friday (5)
+        for ($day = 1; $day <= 5; $day++) {
+            foreach ($schedules as $schedule) {
+                $doctor->availabilities()->create([
+                    'day_of_week' => $day,
+                    'start_time' => $schedule['start'],
+                    'end_time' => $schedule['end'],
+                ]);
+            }
+        }
     }
 }
