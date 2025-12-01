@@ -40,29 +40,149 @@ APPOINTMENT_DURATION_MINUTES=20
 - Panel administrativo protegido con Laravel Jetstream
 - Rutas públicas para agendamiento de citas
 
-## 🚀 Inicio Rápido
+## 🚀 Instalación del Proyecto
+
+### Prerrequisitos
+
+Antes de instalar, asegúrate de tener instalado:
+
+- **PHP** >= 8.2
+- **Composer** (gestor de dependencias PHP)
+- **Node.js** >= 18.x y **NPM**
+- **PostgreSQL** >= 14.x
+- **Git**
+
+### Paso a Paso
+
+#### 1. Clonar el repositorio
 
 ```bash
-# 1. Instalar dependencias
+git clone https://github.com/leonardomrios/AppCitas.git
+cd AppCitas
+```
+
+#### 2. Instalar dependencias de PHP
+
+```bash
 composer install
+```
+
+#### 3. Instalar dependencias de Node.js
+
+```bash
 npm install
+```
 
-# 2. Configurar entorno
-cp .env.example .env
+#### 4. Configurar variables de entorno
+
+```bash
+# Copiar archivo de ejemplo
+copy .env.example .env   # Windows
+# cp .env.example .env   # Linux/Mac
+
+# Generar key de aplicación
 php artisan key:generate
+```
 
-# 3. Crear base de datos
-touch database/database.sqlite
+#### 5. Configurar base de datos PostgreSQL
+
+Edita el archivo `.env` con tus credenciales de PostgreSQL:
+
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=appcitas
+DB_USERNAME=postgres
+DB_PASSWORD=tu_contraseña_aqui
+```
+
+**Crear la base de datos:**
+
+```sql
+-- En PostgreSQL
+CREATE DATABASE appcitas;
+```
+
+#### 6. Configurar correo electrónico
+
+Para desarrollo, usa **Mailtrap**:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=tu_username_mailtrap
+MAIL_PASSWORD=tu_password_mailtrap
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="leoLaravel@example.com"
+MAIL_FROM_NAME="Sistema de Citas"
+```
+
+Para producción con **Gmail**:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=tu_email@gmail.com
+MAIL_PASSWORD=tu_app_password
+MAIL_ENCRYPTION=tls
+```
+
+> **Nota:** Para Gmail, debes crear una [contraseña de aplicación](https://support.google.com/accounts/answer/185833).
+
+#### 7. Configurar duración de citas
+
+En el archivo `.env`:
+
+```env
+APPOINTMENT_DURATION_MINUTES=20
+```
+
+#### 8. Ejecutar migraciones y seeders
+
+```bash
 php artisan migrate --seed
+```
 
-# 4. Compilar assets y ejecutar
+Esto creará:
+- Tablas de la base de datos
+- Usuario administrador
+- 3 médicos con disponibilidad
+- Citas de ejemplo
+
+#### 9. Compilar assets del frontend
+
+Para **desarrollo** con hot-reload:
+
+```bash
+npm run dev
+```
+
+Para **producción**:
+
+```bash
 npm run build
+```
+
+#### 10. Iniciar el servidor
+
+En una terminal nueva:
+
+```bash
 php artisan serve
 ```
 
-**Credenciales Admin:**
+La aplicación estará disponible en: `http://127.0.0.1:8000`
+
+### 👤 Credenciales de Acceso
+
+**Usuario Administrador:**
 - Email: `admin@clinicagastro.com`
 - Password: `password`
+
+**Panel Administrativo:** `http://127.0.0.1:8000/login`
 
 ## 🛣️ Rutas del Sistema
 
@@ -114,9 +234,10 @@ Ver [INSTRUCCIONES_IMPLEMENTACION.md](INSTRUCCIONES_IMPLEMENTACION.md) para:
 
 - **Backend**: Laravel 12, Jetstream, Sanctum
 - **Frontend**: Vue 3, Inertia.js, Tailwind CSS
-- **Base de Datos**: SQLite (configurable a MySQL/PostgreSQL)
+- **Base de Datos**: PostgreSQL
 - **Autenticación**: Laravel Fortify + Jetstream
 - **Emails**: Laravel Mailable
+- **Build Tool**: Vite
 
 ## 👥 Médicos Precargados
 
@@ -142,6 +263,43 @@ npm run dev
 
 # Compilar para producción
 npm run build
+
+# Ejecutar tests
+php artisan test
+
+# Verificar errores de código
+./vendor/bin/pint
+```
+
+## 🐛 Solución de Problemas Comunes
+
+### Error de conexión a PostgreSQL
+```bash
+# Verificar que PostgreSQL esté corriendo
+# Windows: Servicios > PostgreSQL
+# Linux: sudo systemctl status postgresql
+```
+
+### Error "Class not found"
+```bash
+composer dump-autoload
+php artisan config:clear
+```
+
+### Assets no se cargan
+```bash
+npm run build
+php artisan view:clear
+```
+
+### Error de permisos en storage
+```bash
+# Windows (PowerShell como Admin)
+icacls "storage" /grant Users:F /t
+icacls "bootstrap\cache" /grant Users:F /t
+
+# Linux/Mac
+chmod -R 775 storage bootstrap/cache
 ```
 
 ## 📊 Estados de Citas
@@ -166,14 +324,80 @@ npm run build
 - Calendario por médico
 - Acciones: aceptar/rechazar/completar
 
+## 📂 Estructura del Proyecto
+
+```
+AppCitas/
+├── app/
+│   ├── Http/Controllers/     # Controladores
+│   ├── Models/              # Modelos Eloquent
+│   ├── Services/            # Lógica de negocio
+│   └── Mail/                # Plantillas de email
+├── database/
+│   ├── migrations/          # Migraciones de BD
+│   ├── seeders/             # Datos de prueba
+│   └── factories/           # Factories para testing
+├── resources/
+│   ├── js/
+│   │   ├── Pages/          # Componentes Vue
+│   │   └── Layouts/        # Layouts de la app
+│   ├── views/              # Vistas Blade
+│   └── css/                # Estilos
+├── routes/
+│   ├── web.php             # Rutas web
+│   └── api.php             # Rutas API
+└── config/
+    └── appointment.php      # Configuración de citas
+```
+
+## 🚀 Despliegue a Producción
+
+### Preparación
+
+```bash
+# Compilar assets optimizados
+npm run build
+
+# Optimizar autoload
+composer install --optimize-autoloader --no-dev
+
+# Cachear configuraciones
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+### Variables de entorno importantes
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://tudominio.com
+
+# Usar conexión segura para sesiones
+SESSION_SECURE_COOKIE=true
+```
+
 ## 📝 Licencia
 
-Este proyecto es de uso educativo/comercial según los términos acordados.
+Este proyecto es de uso educativo/comercial. Desarrollado por Leonardo Ríos.
+
+## 👨‍💻 Autor
+
+**Leonardo Ríos**
+- GitHub: [@leonardomrios](https://github.com/leonardomrios)
+- Proyecto: [AppCitas](https://github.com/leonardomrios/AppCitas)
 
 ## 🤝 Contribuciones
 
-Para mejoras o reportar bugs, contactar al equipo de desarrollo.
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
 
 ---
 
-Desarrollado con ❤️ usando Laravel y Vue.js
+Desarrollado con ❤️ usando Laravel 12 y Vue 3
