@@ -13,6 +13,7 @@ const props = defineProps({
 
 const selectedDoctorSlug = ref(props.selectedDoctor);
 const currentWeekStart = ref(props.weekStart);
+const showModal = ref(false);
 
 const selectedDoctorData = computed(() => {
     return props.doctors.find(d => d.slug === selectedDoctorSlug.value);
@@ -38,7 +39,12 @@ const loadSlots = () => {
 
 const selectDoctor = (slug) => {
     selectedDoctorSlug.value = slug;
+    showModal.value = true;
     loadSlots();
+};
+
+const closeModal = () => {
+    showModal.value = false;
 };
 
 const bookAppointment = (slot) => {
@@ -186,93 +192,129 @@ const getDoctorIcon = (specialty) => {
                     </div>
                 </div>
 
-                <!-- Calendar -->
-                <div v-if="selectedDoctorSlug && availableSlots.length > 0" class="mt-12 animate-slide-up">
-                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-                        <!-- Calendar Header -->
-                        <div class="bg-gradient-to-r from-medical-600 to-health-600 p-6 text-white">
-                            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                                <div>
-                                    <h2 class="text-2xl font-bold mb-2">Horarios Disponibles</h2>
-                                    <p class="text-medical-100">{{ selectedDoctorData?.name }}</p>
-                                </div>
-                                <div class="flex gap-3">
-                                    <button 
-                                        @click="navigateWeek('prev')"
-                                        class="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg font-medium transition-all hover:scale-105 flex items-center space-x-2"
-                                    >
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                                        </svg>
-                                        <span>Anterior</span>
-                                    </button>
-                                    <button 
-                                        @click="navigateWeek('next')"
-                                        class="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg font-medium transition-all hover:scale-105 flex items-center space-x-2"
-                                    >
-                                        <span>Siguiente</span>
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Modal for Calendar -->
+                <Transition
+                    enter-active-class="transition ease-out duration-300"
+                    enter-from-class="opacity-0"
+                    enter-to-class="opacity-100"
+                    leave-active-class="transition ease-in duration-200"
+                    leave-from-class="opacity-100"
+                    leave-to-class="opacity-0"
+                >
+                    <div v-if="showModal && selectedDoctorSlug" class="fixed inset-0 z-50 overflow-y-auto" @click="closeModal">
+                        <!-- Backdrop -->
+                        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm"></div>
 
-                        <!-- Calendar Grid -->
-                        <div class="p-6">
-                            <div class="grid grid-cols-2 md:grid-cols-7 gap-4">
-                                <div
-                                    v-for="day in 7"
-                                    :key="day"
-                                    class="bg-gradient-to-br from-gray-50 to-medical-50/30 rounded-xl p-4 border border-gray-200"
+                        <!-- Modal Content -->
+                        <div class="flex min-h-full items-center justify-center p-4">
+                            <div 
+                                @click.stop
+                                class="relative bg-white rounded-2xl shadow-2xl w-full max-w-6xl transform transition-all animate-scale-in"
+                            >
+                                <!-- Close Button -->
+                                <button 
+                                    @click="closeModal"
+                                    class="absolute top-4 right-4 z-10 bg-white/90 hover:bg-white text-gray-600 hover:text-gray-900 rounded-full p-2 shadow-lg transition-all hover:scale-110"
                                 >
-                                    <div class="font-bold text-center mb-3 pb-2 border-b border-medical-200">
-                                        <div class="text-xs text-gray-500 uppercase">
-                                            {{ new Date(new Date(currentWeekStart).setDate(new Date(currentWeekStart).getDate() + day - 1)).toLocaleDateString('es-ES', { weekday: 'short' }) }}
-                                        </div>
-                                        <div class="text-lg text-gray-900">
-                                            {{ new Date(new Date(currentWeekStart).setDate(new Date(currentWeekStart).getDate() + day - 1)).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) }}
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+
+                                <!-- Calendar -->
+                                <div v-if="availableSlots.length > 0">
+                                    <!-- Calendar Header -->
+                                    <div class="bg-gradient-to-r from-medical-600 to-health-600 p-6 text-white rounded-t-2xl">
+                                        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                                            <div>
+                                                <h2 class="text-2xl font-bold mb-2">Horarios Disponibles</h2>
+                                                <p class="text-medical-100">{{ selectedDoctorData?.name }}</p>
+                                            </div>
+                                            <div class="flex gap-3">
+                                                <button 
+                                                    @click="navigateWeek('prev')"
+                                                    class="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg font-medium transition-all hover:scale-105 flex items-center space-x-2"
+                                                >
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                                    </svg>
+                                                    <span>Anterior</span>
+                                                </button>
+                                                <button 
+                                                    @click="navigateWeek('next')"
+                                                    class="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg font-medium transition-all hover:scale-105 flex items-center space-x-2"
+                                                >
+                                                    <span>Siguiente</span>
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="space-y-2">
-                                        <button
-                                            v-for="slot in availableSlots.filter(s => {
-                                                const slotDate = new Date(s.start_time).toDateString();
-                                                const dayDate = new Date(new Date(currentWeekStart).setDate(new Date(currentWeekStart).getDate() + day - 1)).toDateString();
-                                                return slotDate === dayDate;
-                                            })"
-                                            :key="slot.start_time"
-                                            @click="bookAppointment(slot)"
-                                            class="w-full text-sm px-3 py-2 bg-gradient-to-r from-medical-500 to-medical-600 hover:from-medical-600 hover:to-health-600 text-white rounded-lg transition-all hover:shadow-lg hover:scale-105 font-medium"
-                                        >
-                                            {{ new Date(slot.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) }}
-                                        </button>
-                                        <div v-if="availableSlots.filter(s => {
-                                            const slotDate = new Date(s.start_time).toDateString();
-                                            const dayDate = new Date(new Date(currentWeekStart).setDate(new Date(currentWeekStart).getDate() + day - 1)).toDateString();
-                                            return slotDate === dayDate;
-                                        }).length === 0" class="text-xs text-center text-gray-400 py-4">
-                                            No disponible
+
+                                    <!-- Calendar Grid -->
+                                    <div class="p-6 max-h-[60vh] overflow-y-auto">
+                                        <div class="grid grid-cols-2 md:grid-cols-7 gap-4">
+                                            <div
+                                                v-for="day in 7"
+                                                :key="day"
+                                                class="bg-gradient-to-br from-gray-50 to-medical-50/30 rounded-xl p-4 border border-gray-200"
+                                            >
+                                                <div class="font-bold text-center mb-3 pb-2 border-b border-medical-200">
+                                                    <div class="text-xs text-gray-500 uppercase">
+                                                        {{ new Date(new Date(currentWeekStart).setDate(new Date(currentWeekStart).getDate() + day - 1)).toLocaleDateString('es-ES', { weekday: 'short' }) }}
+                                                    </div>
+                                                    <div class="text-lg text-gray-900">
+                                                        {{ new Date(new Date(currentWeekStart).setDate(new Date(currentWeekStart).getDate() + day - 1)).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) }}
+                                                    </div>
+                                                </div>
+                                                <div class="space-y-2">
+                                                    <button
+                                                        v-for="slot in availableSlots.filter(s => {
+                                                            const slotDate = new Date(s.start_time).toDateString();
+                                                            const dayDate = new Date(new Date(currentWeekStart).setDate(new Date(currentWeekStart).getDate() + day - 1)).toDateString();
+                                                            return slotDate === dayDate;
+                                                        })"
+                                                        :key="slot.start_time"
+                                                        @click="bookAppointment(slot)"
+                                                        class="w-full text-sm px-3 py-2 bg-gradient-to-r from-medical-500 to-medical-600 hover:from-medical-600 hover:to-health-600 text-white rounded-lg transition-all hover:shadow-lg hover:scale-105 font-medium"
+                                                    >
+                                                        {{ new Date(slot.start_time).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) }}
+                                                    </button>
+                                                    <div v-if="availableSlots.filter(s => {
+                                                        const slotDate = new Date(s.start_time).toDateString();
+                                                        const dayDate = new Date(new Date(currentWeekStart).setDate(new Date(currentWeekStart).getDate() + day - 1)).toDateString();
+                                                        return slotDate === dayDate;
+                                                    }).length === 0" class="text-xs text-center text-gray-400 py-4">
+                                                        No disponible
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
+                                </div>
+
+                                <!-- No slots available -->
+                                <div v-else class="p-12 text-center">
+                                    <div class="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                                        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No hay horarios disponibles</h3>
+                                    <p class="text-gray-600 mb-6">Intenta seleccionar otra semana</p>
+                                    <button 
+                                        @click="closeModal"
+                                        class="bg-gradient-to-r from-medical-600 to-health-600 text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all"
+                                    >
+                                        Cerrar
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div v-else-if="selectedDoctorSlug" class="text-center py-12 animate-fade-in">
-                    <div class="bg-white rounded-2xl shadow-lg p-12 max-w-md mx-auto">
-                        <div class="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">No hay horarios disponibles</h3>
-                        <p class="text-gray-600">Intenta seleccionar otra semana o médico</p>
-                    </div>
-                </div>
+                </Transition>
             </div>
         </div>
 
